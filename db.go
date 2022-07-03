@@ -29,21 +29,10 @@ func init() {
 	db = *dynamodb.NewFromConfig(sdkConfig)
 }
 
-type UpdateTodo struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description" validate:"required"`
-	Status      bool   `json:"status" validate:"required"`
-}
-
-type CreateTodo struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description" validate:"required"`
-}
-
 type Todo struct {
-	Id          string `json:"id" dynamodbav:"id" validate:"required"`
-	Name        string `json:"name" dynamodbav:"name" validate:"required"`
-	Description string `json:"description" dynamodbav:"description" validate:"required"`
+	Id          string `json:"id" dynamodbav:"id"`
+	Name        string `json:"name" dynamodbav:"name"`
+	Description string `json:"description" dynamodbav:"description"`
 	Status      bool   `json:"status" dynamodbav:"status"`
 }
 
@@ -210,7 +199,7 @@ func updateItem(ctx context.Context, id string, updateTodo UpdateTodo) (*Todo, e
 		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
 		ConditionExpression:       expr.Condition(),
-		ReturnValues:              types.ReturnValue(*aws.String("UPDATED_NEW")),
+		ReturnValues:              types.ReturnValue(*aws.String("ALL_NEW")),
 	}
 
 	res, err := db.UpdateItem(ctx, input)
