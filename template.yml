@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  TodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 10
+      Handler: main
+      Runtime: go1.x
+      Policies:
+        - AWSLambdaExecute
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TodoTable
+      Events:
+        GetTodo:
+          Type: Api
+          Properties:
+            Path: /todo/{id}
+            Method: GET
+        GetTodos:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: GET
+        PutTodo:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: POST
+        DeleteTodo:
+          Type: Api
+          Properties:
+            Path: /todo/{id}
+            Method: DELETE
+        UpdateTodo:
+          Type: Api
+          Properties:
+            Path: /todo/{id}
+            Method: PUT
+    Metadata:
+      BuildMethod: makefile
+
+  TodoTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Todos
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
